@@ -6,9 +6,9 @@ const Header = ({ title, subtitle }) => {
   const colors = tokens(theme.palette.mode);
 
   return (
-    <Box>
+    <Box mb="30px" m="10px">
       <Typography
-        variant="h3"
+        variant="h2"
         color={colors.grey[100]}
         fontWeight="bold"
         sx={{ mb: "5px" }}
