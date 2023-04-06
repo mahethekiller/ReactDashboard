@@ -18,8 +18,8 @@ const Topbar = () => {
       {/* Search Bar */}
       <Box
         display="flex"
-        backgroudColor={colors.primary[400]}
-        borderRadiu="3px"
+        backgroundColor={colors.primary[400]}
+        borderRadius="3px"
       >
         <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
         <IconButton type="button" sx={{ p: 1 }}>
