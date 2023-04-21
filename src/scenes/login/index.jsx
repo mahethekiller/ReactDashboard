@@ -1,11 +1,13 @@
-import { Box, Button, ButtonBaseActions, Container, TextField } from "@mui/material";
+import { Alert, Box, Button, ButtonBaseActions, Container, TextField } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
-import { useState, useRef, useContext } from "react";
-import AuthContext from "../../context/AuthProvider";
+import { useState, useRef } from "react";
+import useAuth from "../../hooks/useAuth";
 import axios from "../../api/axios";
+import Dashboard from "../dashboard";
+import { redirect } from "react-router-dom";
 
 const initialValues = {
   userId: "",
@@ -24,91 +26,127 @@ const userSchema = yup.object().shape({
 const Login = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
-  const { setauth } = useContext(AuthContext);
+  const { setAuth } = useAuth();
 
   const errRef = useRef();
 
   const [user, setUser] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleFormSubmit = async (values) => {
-    console.log(values.userId);
+    const password = values.password;
+    const userId = values.userId;
 
     try {
       const response = await axios.post(
         "/login/",
         JSON.stringify({
-          username: values.userId,
-          password: values.password,
+          username: userId,
+          password: password,
         }),
         {
           headers: { "Content-Type": "application/json" },
-          //   withCredentials: true,
+          withCredentials: true,
         }
       );
 
-      console.log(JSON.stringify(response?.data));
+      const accessToken = response?.data?.accessToken;
+      const user = response?.data?.user;
+
+      console.log(user);
+
+      setAuth({ user, password, accessToken });
+      setUser("");
+      setSuccess(true);
+
+      // console.log(JSON.stringify(response?.data));
     } catch (err) {
       console.log(err);
+
+      if (!err?.response) {
+        setErrMsg("No server Response");
+      } else if (!err?.response?.status === 400) {
+        setErrMsg("Missing username or password");
+      } else if (!err?.response?.status === 401) {
+        setErrMsg("Unauthorized");
+      } else {
+        setErrMsg("Login Failed");
+      }
+      errRef.current.focus();
     }
   };
-
+  console.log("succ ----------------" + success);
   return (
-    <Box m="20px">
-      <Container component="main" maxWidth="xs">
-        <Header title="Login" subtitle="Enter Your Credentials" />
+    <>
+      {success == true ? (
+        <Box m="20px">
+          <Container component="main" maxWidth="xs">
+            <Header title="Login" subtitle="Enter Your Credentials" />
 
-        <Formik onSubmit={handleFormSubmit} initialValues={initialValues} validationSchema={userSchema}>
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
-            <form onSubmit={handleSubmit}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                gap="30px"
-                gridTemplateColumns="repeat(4,minmax(0,1fr))"
-                sx={{
-                  "& >div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                  alignItems: "center",
-                }}
-              >
-                <TextField
-                  fullWidth
-                  variant="filled"
-                  type="text"
-                  label="User Id"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.userId}
-                  name="userId"
-                  error={!!touched.userId && !!errors.userId}
-                  helperText={touched.userId && errors.userId}
-                  sx={{ gridColumn: "span 4" }}
-                />
+            {errMsg ? (
+              <Alert ref={errRef} severity="error">
+                {errMsg}
+              </Alert>
+            ) : (
+              ""
+            )}
 
-                <TextField
-                  fullWidth
-                  variant="filled"
-                  type="password"
-                  label="Password"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.password}
-                  name="password"
-                  error={!!touched.password && !!errors.password}
-                  helperText={touched.password && errors.password}
-                  sx={{ gridColumn: "span 4" }}
-                />
-              </Box>
-              <Box display="flex" justifyContent="end" mt="20px">
-                <Button type="submit" color="secondary" variant="contained">
-                  Login
-                </Button>
-              </Box>
-            </form>
-          )}
-        </Formik>
-      </Container>
-    </Box>
+            <Formik onSubmit={handleFormSubmit} initialValues={initialValues} validationSchema={userSchema}>
+              {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
+                <form onSubmit={handleSubmit}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    gap="30px"
+                    gridTemplateColumns="repeat(4,minmax(0,1fr))"
+                    sx={{
+                      "& >div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                      alignItems: "center",
+                    }}
+                  >
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      type="text"
+                      label="User Id"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.userId}
+                      name="userId"
+                      error={!!touched.userId && !!errors.userId}
+                      helperText={touched.userId && errors.userId}
+                      sx={{ gridColumn: "span 4" }}
+                    />
+
+                    <TextField
+                      fullWidth
+                      variant="filled"
+                      type="password"
+                      label="Password"
+                      onBlur={handleBlur}
+                      onChange={handleChange}
+                      value={values.password}
+                      name="password"
+                      error={!!touched.password && !!errors.password}
+                      helperText={touched.password && errors.password}
+                      sx={{ gridColumn: "span 4" }}
+                    />
+                  </Box>
+                  <Box display="flex" justifyContent="end" mt="20px">
+                    <Button type="submit" color="secondary" variant="contained">
+                      Login
+                    </Button>
+                  </Box>
+                </form>
+              )}
+            </Formik>
+          </Container>
+        </Box>
+      ) : (
+        redirect("/dashboard")
+      )}
+    </>
   );
 };
 

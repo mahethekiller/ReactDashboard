@@ -2,13 +2,14 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Login from "../scenes/login";
 
-function LoginRoutes() {
+function PublicRoutes() {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       {/* <Route path="/invoices" element={<Invoices />} /> */}
     </Routes>
   );
 }
 
-export default LoginRoutes;
+export default PublicRoutes;
