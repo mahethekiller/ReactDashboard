@@ -6,9 +6,13 @@ const RequireAuth = () => {
   const { auth } = useAuth();
   const location = useLocation();
 
-  console.log(auth);
+  console.log("AUTH DASHH->" + JSON.stringify(auth));
 
-  return auth?.user ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
+  return auth?.user ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/login" state={{ from: location }} replace />
+  );
 };
 
 export default RequireAuth;
