@@ -67,7 +67,7 @@ const Login = () => {
 
       setAuth({ user, password, accessToken });
       setUser("");
-      navigate("/dashboard", { replace: true });
+      navigate(from, { replace: true });
       // setSuccess(true);
 
       // console.log(JSON.stringify(response?.data));

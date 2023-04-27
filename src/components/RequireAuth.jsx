@@ -6,7 +6,7 @@ const RequireAuth = () => {
   const { auth } = useAuth();
   const location = useLocation();
 
-  console.log("AUTH DASHH->" + JSON.stringify(auth));
+  //   console.log("AUTH DASHH->" + JSON.stringify(auth));
 
   return auth?.user ? (
     <Outlet />
