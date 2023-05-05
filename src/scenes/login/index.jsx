@@ -1,11 +1,4 @@
-import {
-  Alert,
-  Box,
-  Button,
-  ButtonBaseActions,
-  Container,
-  TextField,
-} from "@mui/material";
+import { Alert, Box, Button, ButtonBaseActions, Container, TextField } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -63,7 +56,7 @@ const Login = () => {
       const accessToken = response?.data?.accessToken;
       const user = response?.data?.user;
 
-      console.log(user);
+      // console.log(user);
 
       setAuth({ user, password, accessToken });
       setUser("");
@@ -100,20 +93,8 @@ const Login = () => {
           ""
         )}
 
-        <Formik
-          onSubmit={handleFormSubmit}
-          initialValues={initialValues}
-          validationSchema={userSchema}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-          }) => (
+        <Formik onSubmit={handleFormSubmit} initialValues={initialValues} validationSchema={userSchema}>
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
             <form onSubmit={handleSubmit}>
               <Box
                 display="flex"
